@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Location and Photo to Telegram</title>
+    <style>
+        /* Add your custom styles here */
+    </style>
+</head>
+<body>
+
+    <h1>Send Location and Photo to Telegram</h1>
+
+    <!-- Display current location -->
+    <p id="location"></p>
+
+    <!-- Input for photo upload -->
+    <input type="file" accept="image/*" id="photoInput">
+    
+    <!-- Button to trigger sending location and photo -->
+    <button onclick="sendData()">Send Data</button>
+
+    <script>
+        // Function to get and display current location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Callback function to display current location
+        function showPosition(position) {
+            const locationElement = document.getElementById("location");
+            locationElement.innerHTML = "Latitude: " + position.coords.latitude + "<br>Longitude: " + position.coords.longitude;
+        }
+
+        // Function to send location and photo to Telegram
+        function sendData() {
+            // Get the current location
+            getLocation();
+
+            // Replace 'YOUR_BOT_TOKEN' and 'YOUR_CHAT_ID' with your actual bot token and chat ID
+            const botToken = 6728550531:AAGYvCa4oJIQuL6cWk4uaXev2UhCF1Wjz2M;
+            const chatId = -1002096273326;
+
+            // Get the photo input element
+            const photoInput = document.getElementById("photoInput");
+
+            // Check if a file is selected
+            if (photoInput.files.length > 0) {
+                // Prepare photo data
+                const photoFile = photoInput.files[0];
+
+                // Create a FormData object to send as a multipart/form-data request
+                const formData = new FormData();
+                formData.append('photo', photoFile);
+                formData.append('chat_id', chatId);
+                formData.append('caption', 'Photo from the web page.');
+
+                // Make the HTTP POST request to send the photo to Telegram
+                fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response from Telegram (you can add your logic here)
+                    console.log(data);
+                    alert('Data sent to Telegram!');
+                })
+                .catch(error => {
+                    // Handle errors (you can add your error handling logic here)
+                    console.error('Error sending data:', error);
+                    alert('Failed to send data to Telegram.');
+                });
+            } else {
+                alert("Please select a photo to upload.");
+            }
+        }
+    </script>
+
+</body>
+</html>
